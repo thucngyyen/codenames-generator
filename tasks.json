@@ -1,0 +1,177 @@
+[
+  {
+    "id": "setup-vite-pwa",
+    "type": "setup",
+    "feature": "infrastructure",
+    "task": "Vite project + PWA plugin setup",
+    "priority": "Critical",
+    "depends_on": [],
+    "detail": "Initialize Vite with TypeScript template. Install and configure vite-plugin-pwa in generateSW mode. Set up src/ directory structure. Create index.html with basic skeleton and required meta tags (viewport, theme-color, apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style). Ensure build outputs to dist/ and service worker is auto-generated.",
+    "passing_requirement": [
+      "vite build succeeds with zero errors",
+      "vite-plugin-pwa injects service worker into build output",
+      "index.html contains all required PWA meta tags"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "pwa-assets",
+    "type": "setup",
+    "feature": "infrastructure",
+    "task": "Create PWA manifest and icons",
+    "priority": "Critical",
+    "depends_on": ["setup-vite-pwa"],
+    "detail": "Create manifest.json with name, short_name, start_url, display standalone, background_color #ffffff, theme_color #ffffff, and icon references (192x192, 512x512, maskable). Generate simple colored-square placeholder icons (red/blue pattern) or create via data URI / SVG. Add apple-touch-icon link in index.html. Ensure icons are referenced in Vite config for precaching.",
+    "passing_requirement": [
+      "manifest.json is valid and linked in index.html",
+      "icon files exist and are referenced correctly",
+      "Lighthouse PWA audit shows manifest and icons pass"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "word-packs",
+    "type": "feature",
+    "feature": "data",
+    "task": "Create 5 word pack modules + registry",
+    "priority": "Critical",
+    "depends_on": ["setup-vite-pwa"],
+    "detail": "Create src/packs/pack1.ts through pack5.ts. Each exports a WordPack object with id, name, and exactly 100 words (string[]). Create src/packs/index.ts that exports all 5 packs and a getActiveWords(packIds: string[]) function that merges selected packs, deduplicates case-insensitively (keep first-cased form), and returns the unique word pool. Ensure no duplicate words exist across the 500 total words.",
+    "passing_requirement": [
+      "Each pack contains exactly 100 words",
+      "No duplicates exist within or across all 5 packs",
+      "getActiveWords correctly deduplicates case-insensitively",
+      "getActiveWords returns empty array when no packs selected"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "types-prng",
+    "type": "setup",
+    "feature": "core",
+    "task": "Define types and implement Mulberry32 PRNG",
+    "priority": "Critical",
+    "depends_on": ["setup-vite-pwa"],
+    "detail": "Create src/types.ts with CardColor, WordPack, Cell, Board, ViewMode interfaces. Create src/prng.ts with mulberry32(seed: string) function using FNV-1a-style seed mixing: init n=0x811c9dc5, loop seed chars with Math.imul(n ^ charCode, 16777619). Return function that produces [0,1) floats. Test deterministic: same seed always produces same sequence.",
+    "passing_requirement": [
+      "Same seed produces identical number sequence",
+      "Different seeds produce different sequences",
+      '"ab" and "ba" produce different sequences (no collision)',
+      "Distribution roughly uniform across 10000 samples"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "board-generator",
+    "type": "feature",
+    "feature": "core",
+    "task": "Implement board + secret generator",
+    "priority": "Critical",
+    "depends_on": ["types-prng", "word-packs"],
+    "detail": "Create src/generator.ts with generateBoard(config) function. Flow: (1) get word pool from active packs, (2) if pool < 25 words throw error, (3) create two PRNGs: mulberry32(seed + ':words') and mulberry32(seed + ':colors'), (4) Fisher-Yates shuffle pool with rngWords, pick first 25, (5) build color array [9 firstTeam, 8 secondTeam, 7 neutral, 1 assassin], (6) Fisher-Yates shuffle colors with rngColors, (7) zip into 25 Cell objects. Return Board with seed, firstTeam, cells. First team chosen randomly when config says 'random'.",
+    "passing_requirement": [
+      "Generated board always has exactly 25 cells",
+      "No duplicate words in any generated board",
+      "Color distribution is exactly 9/8/7/1",
+      "Same seed + packs produces identical board",
+      "Throws clear error when active packs < 25 unique words"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "url-sharing",
+    "type": "feature",
+    "feature": "core",
+    "task": "Implement URL hash encode/decode",
+    "priority": "High",
+    "depends_on": ["types-prng", "board-generator"],
+    "detail": "Create src/url.ts with encodeBoard(board, viewMode, activePackIds) and decodeBoard(hash) functions. Encode format: seed|packIdsCommaSeparated|firstTeam|viewMode. Use btoa(encodeURIComponent(str)) with base64url-safe replace (+→-, /→_, trim =). Decode reverses: restore padding, replace back, atob, decodeURIComponent, split by |. On page load, detect hash and attempt decode. Invalid hash → silent ignore, generate new random board. Also export copyToClipboard helper with fallback (select text + prompt).",
+    "passing_requirement": [
+      "Encode then decode produces identical values",
+      "Decoded hash regenerates identical board",
+      "Invalid hash is silently ignored without crashing",
+      "Clipboard fallback works when navigator.clipboard unavailable"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "css-styling",
+    "type": "feature",
+    "feature": "ui",
+    "task": "Build responsive CSS (mobile-first)",
+    "priority": "High",
+    "depends_on": ["setup-vite-pwa"],
+    "detail": "Create styles.css at project root with mobile-first design. Board: CSS Grid 5 columns, gap 8px, 100% width, max-width 500px, centered. Cards: aspect-ratio 3/2, flex center, font-size clamp(10px, 3.5vw, 16px), padding 4px, text-align center, border-radius 4px, overflow-wrap break-word. Touch targets: buttons/checkboxes minimum 44x44px. Toggle switch: 48px height. Card colors in spymaster mode: .card.red, .card.blue, .card.neutral, .card.assassin with appropriate colors. Operative mode: all cards beige/cream. Layout: header, controls row, board, footer stacked vertically. No animations beyond CSS transitions.",
+    "passing_requirement": [
+      "5x5 grid renders correctly at 320px width",
+      "5x5 grid renders correctly at 500px+ width",
+      "All touch targets are ≥ 44x44px",
+      "Toggle switch is visually clear and 48px tall",
+      "Text fits within cards without overflow on mobile"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "ui-components",
+    "type": "feature",
+    "feature": "ui",
+    "task": "Build UI rendering + state management",
+    "priority": "High",
+    "depends_on": ["css-styling", "board-generator", "url-sharing"],
+    "detail": "Create src/ui.ts with render functions: renderBoard(board, viewMode) creates/updates DOM grid, apply card colors only in spymaster mode, operative shows beige. Create src/state.ts with module-level state: currentBoard, viewMode, activePackIds (Set with all 5 packs default). Expose getState, setBoard, setViewMode, toggleViewMode, togglePack, setActivePacks. UI components: header with title, generate button, share button; controls row with 5 pack checkboxes + view toggle; board grid; footer showing current seed. Share button triggers encode + clipboard copy + toast notification.",
+    "passing_requirement": [
+      "Board renders 25 cards in 5x5 grid",
+      "Operative mode shows all cards beige",
+      "Spymaster mode shows correct colors per cell",
+      "Pack checkboxes reflect activePackIds state",
+      "View toggle reflects current viewMode",
+      "Seed display updates on generate"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "event-handling",
+    "type": "feature",
+    "feature": "ui",
+    "task": "Wire all event handlers",
+    "priority": "High",
+    "depends_on": ["ui-components"],
+    "detail": "Create src/main.ts that initializes everything on DOMContentLoaded. Event handlers: (1) Generate button → new random seed, regenerate board, update URL hash, render. (2) Share button → encode current state to hash, copy URL to clipboard, show toast. (3) View toggle → toggleViewMode, re-render board colors. (4) Pack checkbox change → update activePackIds, regenerate board with same seed, re-render. (5) Hashchange event → decode hash, regenerate board, set viewMode, re-render. (6) Window load → check for hash, if none generate new random board.",
+    "passing_requirement": [
+      "Generate button creates new random board",
+      "Share button copies URL that reproduces board when pasted",
+      "View toggle instantly switches card colors without regenerating",
+      "Pack checkbox change regenerates board",
+      "Page load with hash restores exact board and view mode",
+      "Page load without hash generates new random board"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  },
+  {
+    "id": "offline-testing",
+    "type": "feature",
+    "feature": "pwa",
+    "task": "Verify offline functionality",
+    "priority": "High",
+    "depends_on": ["pwa-assets", "event-handling"],
+    "detail": "Build project with vite build. Serve dist/ locally (npx serve dist or python http.server). Open in browser, verify board generates. Disable network (DevTools → Network → Offline). Refresh page. App should load instantly from cache. Generate new board — should work. Toggle view mode — should work. Verify service worker is registered and caching. Test on mobile viewport sizes in DevTools. Verify no console errors in offline mode.",
+    "passing_requirement": [
+      "App loads successfully with network disabled",
+      "Board generation works offline",
+      "View toggle works offline",
+      "No console errors in offline mode",
+      "Service Worker is registered and controlling page"
+    ],
+    "status": "Not Started",
+    "notes": ""
+  }
+]

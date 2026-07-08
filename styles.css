@@ -1,0 +1,355 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 8px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #3498db;
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease;
+}
+
+.btn:active {
+  background: #2980b9;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-share {
+  background: #27ae60;
+}
+
+.btn-share:active {
+  background: #219a52;
+}
+
+.btn-shuffle {
+  background: #e67e22;
+}
+
+.btn-shuffle:active {
+  background: #d35400;
+}
+
+.btn-shuffle:disabled {
+  background: #bdc3c7;
+  opacity: 0.6;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pack-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pack-label input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+  margin-left: auto;
+}
+
+.view-toggle input[type='checkbox'] {
+  appearance: none;
+  width: 48px;
+  height: 28px;
+  background: #ccc;
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.view-toggle input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.view-toggle input[type='checkbox']:checked {
+  background: #9b59b6;
+}
+
+.view-toggle input[type='checkbox']:checked::after {
+  transform: translateX(20px);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 12px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 2;
+  padding: 4px;
+  font-size: clamp(10px, 3.5vw, 16px);
+  text-align: center;
+  border-radius: 4px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  background: #f5f5dc;
+  border: 1px solid #ddd;
+  color: #222;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.card.custom::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  background: #f39c12;
+  border-radius: 50%;
+}
+
+.card.editing {
+  padding: 2px;
+  cursor: text;
+}
+
+.card-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-align: center;
+  padding: 2px;
+  font-family: inherit;
+}
+
+.card.red {
+  background: #e74c3c;
+  border-color: #c0392b;
+  color: #fff;
+}
+
+.card.blue {
+  background: #3498db;
+  border-color: #2980b9;
+  color: #fff;
+}
+
+.card.neutral {
+  background: #d4d4d4;
+  border-color: #bbb;
+  color: #222;
+}
+
+.card.assassin {
+  background: #2c3e50;
+  border-color: #1a252f;
+  color: #fff;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 8px;
+}
+
+.first-team {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.team-red {
+  color: #e74c3c;
+}
+
+.team-blue {
+  color: #3498db;
+}
+
+.toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c3e50;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.password-overlay,
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  padding: 16px;
+}
+
+.password-box,
+.modal-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.password-box h3,
+.modal-box h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.password-box p {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 12px;
+}
+
+.password-box input,
+.modal-field input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.password-error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-field input {
+  margin-bottom: 8px;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  margin-top: 8px;
+}
+
+.btn-secondary:active {
+  background: #7f8c8d;
+}

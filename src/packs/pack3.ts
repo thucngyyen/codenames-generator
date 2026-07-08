@@ -1,6 +1,6 @@
 export const pack3 = {
   id: 'pack3',
-  name: 'Pack 3',
+  name: 'Actions',
   words: [
   "Run",
   "Jump",

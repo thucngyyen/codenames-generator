@@ -1,6 +1,6 @@
 export const pack2 = {
   id: 'pack2',
-  name: 'Pack 2',
+  name: 'Concepts & Opposites',
   words: [
   "Time",
   "Love",

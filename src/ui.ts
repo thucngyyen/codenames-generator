@@ -1,4 +1,5 @@
 import type { Board, ViewMode } from './types'
+import { allPacks } from './packs'
 import { encodeBoard, copyToClipboard } from './url'
 
 const app = document.getElementById('app')!
@@ -47,18 +48,20 @@ export function initUI() {
   // Controls
   controlsEl = document.createElement('div')
   controlsEl.className = 'controls'
-  for (let i = 1; i <= 5; i++) {
+  const container = controlsEl
+  for (let i = 0; i < allPacks.length; i++) {
+    const pack = allPacks[i]
     const label = document.createElement('label')
     label.className = 'pack-label'
     const cb = document.createElement('input')
     cb.type = 'checkbox'
-    cb.id = `pack-${i}`
-    cb.value = `pack${i}`
+    cb.id = `pack-${i + 1}`
+    cb.value = pack.id
     cb.checked = true
     label.appendChild(cb)
-    label.appendChild(document.createTextNode(` Pack ${i}`))
-    controlsEl.appendChild(label)
-    packCheckboxes.set(`pack${i}`, cb)
+    label.appendChild(document.createTextNode(` ${pack.name}`))
+    container.appendChild(label)
+    packCheckboxes.set(pack.id, cb)
   }
 
   const toggleLabel = document.createElement('label')

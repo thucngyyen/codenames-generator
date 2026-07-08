@@ -1,6 +1,6 @@
 export const pack4 = {
   id: 'pack4',
-  name: 'Pack 4',
+  name: 'Geography & Terrain',
   words: [
   "City",
   "Town",

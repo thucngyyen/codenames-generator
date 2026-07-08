@@ -1,6 +1,6 @@
 export const pack1 = {
   id: 'pack1',
-  name: 'Pack 1',
+  name: 'Objects & Places',
   words: [
   "Apple",
   "Bridge",

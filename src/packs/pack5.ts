@@ -1,6 +1,6 @@
 export const pack5 = {
   id: 'pack5',
-  name: 'Pack 5',
+  name: 'Shapes, Structures & Tools',
   words: [
   "Book",
   "Page",

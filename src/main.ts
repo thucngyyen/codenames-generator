@@ -22,6 +22,7 @@ import {
   handleShare,
   showPasswordPrompt,
   showToast,
+  generatePassword,
   getGenerateBtn,
   getShuffleBtn,
   setShuffleDisabled,
@@ -94,12 +95,12 @@ function applyViewToggle() {
 }
 
 function promptForSpymaster() {
-  const hash = location.hash.slice(1)
-  if (!hash) return
-  const decoded = decodeBoard(hash)
-  if (!decoded || !decoded.password) return
+  const state = getState()
+  if (!state.currentBoard) return
 
-  showPasswordPrompt(decoded.password, () => {
+  const expectedPassword = generatePassword(state.currentBoard.seed)
+
+  showPasswordPrompt(expectedPassword, () => {
     setPasswordVerified(true)
     setViewMode('spymaster')
     fullRender()
@@ -160,7 +161,14 @@ function loadFromHash(hash: string) {
   regenerateAndRender(decoded.seed, decoded.firstTeam)
 
   if (decoded.password) {
-    // Spymaster share: password required to see secrets
+    // Spymaster share with password in URL
+    setPasswordRequired(true)
+    setPasswordVerified(false)
+    setViewMode('operative')
+    setShuffleDisabled(true)
+    fullRender()
+  } else if (decoded.viewMode === 'spymaster') {
+    // Spymaster share without password in URL (QR code)
     setPasswordRequired(true)
     setPasswordVerified(false)
     setViewMode('operative')

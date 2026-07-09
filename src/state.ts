@@ -2,7 +2,7 @@ import type { Board, ViewMode } from './types'
 
 let currentBoard: Board | null = null
 let viewMode: ViewMode = 'spymaster'
-const activePackIds = new Set<string>(['pack1', 'pack2', 'pack3', 'pack4', 'pack5'])
+const activePackIds = new Set<string>(['family-friendly', 'pack1', 'pack2'])
 let shareMode: 'local' | 'shared' = 'local'
 let passwordRequired = false
 let passwordVerified = false

@@ -35,9 +35,9 @@ body {
 
 .header h1 {
   font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.15;
   color: #f5e6c8;
   text-shadow: 0 2px 4px rgba(0,0,0,0.4);
   letter-spacing: 0.5px;
@@ -150,21 +150,6 @@ body {
   justify-items: center;
   min-width: 0;
   width: 100%;
-}
-
-.pack-badge:nth-child(4),
-.pack-badge:nth-child(5) {
-  grid-column: span 1;
-}
-
-.pack-badge:nth-child(4) {
-  justify-self: end;
-  margin-right: 6px;
-}
-
-.pack-badge:nth-child(5) {
-  justify-self: start;
-  margin-left: 6px;
 }
 
 /* Pack badge */
@@ -681,7 +666,7 @@ body {
 /* Responsive tweaks */
 @media (max-width: 400px) {
   .header h1 {
-    font-size: 1rem;
+    font-size: 1.4rem;
   }
 
   .btn {

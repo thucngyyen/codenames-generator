@@ -665,6 +665,19 @@ body {
   font-size: 0.9rem;
 }
 
+.qr-field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0 18px;
+}
+
+.qr-field canvas {
+  display: block;
+  border-radius: 8px;
+  border: 2px solid rgba(160, 130, 90, 0.4);
+}
+
 /* Responsive tweaks */
 @media (max-width: 400px) {
   .header h1 {
@@ -735,5 +748,4 @@ body {
     font-size: 0.65rem;
     margin-bottom: 10px;
   }
-}
 }

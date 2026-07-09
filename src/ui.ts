@@ -1,6 +1,7 @@
 import type { Board, ViewMode } from './types'
 import { allPacks } from './packs'
 import { encodeBoard, copyToClipboard } from './url'
+import QRCode from 'qrcode'
 
 const app = document.getElementById('app')!
 
@@ -139,6 +140,9 @@ export function initUI() {
   shareModal.innerHTML = `
     <div class="modal-box">
       <h3>Share Board</h3>
+      <div class="qr-field">
+        <canvas id="qr-code"></canvas>
+      </div>
       <div class="modal-field">
         <label>URL</label>
         <input type="text" id="share-url" readonly />
@@ -368,7 +372,7 @@ export function hidePasswordPrompt() {
   }
 }
 
-export function showShareModal(url: string, password?: string) {
+export function showShareModal(url: string, password?: string, qrUrl?: string) {
   if (!shareModal) return
   shareModal.style.display = 'flex'
   const urlInput = shareModal.querySelector<HTMLInputElement>('#share-url')!
@@ -377,6 +381,7 @@ export function showShareModal(url: string, password?: string) {
   const copyUrlBtn = shareModal.querySelector<HTMLButtonElement>('#copy-url-btn')!
   const copyPasswordBtn = shareModal.querySelector<HTMLButtonElement>('#copy-password-btn')!
   const closeBtn = shareModal.querySelector<HTMLButtonElement>('#close-modal-btn')!
+  const qrCanvas = shareModal.querySelector<HTMLCanvasElement>('#qr-code')!
 
   urlInput.value = url
 
@@ -387,6 +392,17 @@ export function showShareModal(url: string, password?: string) {
     passwordField.style.display = 'none'
     passwordInput.value = ''
   }
+
+  // Generate QR code with URL that does not contain the password
+  const qrData = qrUrl || url
+  QRCode.toCanvas(qrCanvas, qrData, { width: 200, margin: 2 }, (err) => {
+    if (err) {
+      console.error('QR code generation failed:', err)
+      qrCanvas.style.display = 'none'
+    } else {
+      qrCanvas.style.display = 'block'
+    }
+  })
 
   copyUrlBtn.onclick = async () => {
     const ok = await copyToClipboard(urlInput.value)
@@ -415,7 +431,10 @@ export async function handleShare(
   }
   const hash = encodeBoard(board, viewMode, [...activePackIds], password, customWords)
   const url = `${location.origin}${location.pathname}#${hash}`
-  showShareModal(url, password)
+  // QR code gets a URL without the password embedded
+  const hashNoPassword = encodeBoard(board, viewMode, [...activePackIds], undefined, customWords)
+  const qrUrl = `${location.origin}${location.pathname}#${hashNoPassword}`
+  showShareModal(url, password, qrUrl)
 }
 
 export function getShuffleBtn() {

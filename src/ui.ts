@@ -45,33 +45,61 @@ export function initUI() {
   clearCustomBtn = headerEl.querySelector('#clear-custom-btn')!
   shareBtn = headerEl.querySelector('#share-btn')!
 
-  // Controls
+  // Controls dashboard
   controlsEl = document.createElement('div')
-  controlsEl.className = 'controls'
-  const container = controlsEl
+  controlsEl.className = 'control-dashboard'
+
+  // Pack panel
+  const packPanel = document.createElement('div')
+  packPanel.className = 'pack-panel'
+  packPanel.innerHTML = `<div class="pack-panel-title">Card Pack Selection</div>`
+
+  const packGrid = document.createElement('div')
+  packGrid.className = 'pack-grid'
+
   for (let i = 0; i < allPacks.length; i++) {
     const pack = allPacks[i]
-    const label = document.createElement('label')
-    label.className = 'pack-label'
+    const badge = document.createElement('label')
+    badge.className = 'pack-badge'
     const cb = document.createElement('input')
     cb.type = 'checkbox'
     cb.id = `pack-${i + 1}`
     cb.value = pack.id
     cb.checked = true
-    label.appendChild(cb)
-    label.appendChild(document.createTextNode(` ${pack.name}`))
-    container.appendChild(label)
+    const iconWrap = document.createElement('span')
+    iconWrap.className = 'pack-icon'
+    const nameWrap = document.createElement('span')
+    nameWrap.className = 'pack-name'
+    nameWrap.textContent = pack.name
+    badge.appendChild(cb)
+    badge.appendChild(iconWrap)
+    badge.appendChild(nameWrap)
+    packGrid.appendChild(badge)
     packCheckboxes.set(pack.id, cb)
   }
 
-  const toggleLabel = document.createElement('label')
-  toggleLabel.className = 'view-toggle'
+  packPanel.appendChild(packGrid)
+  controlsEl.appendChild(packPanel)
+
+  // Role panel (vertical toggle)
+  const rolePanel = document.createElement('div')
+  rolePanel.className = 'role-panel'
   viewToggle = document.createElement('input')
   viewToggle.type = 'checkbox'
   viewToggle.id = 'view-toggle'
-  toggleLabel.appendChild(document.createTextNode('Spymaster '))
-  toggleLabel.appendChild(viewToggle)
-  controlsEl.appendChild(toggleLabel)
+  rolePanel.innerHTML = `
+    <div class="role-label-top">Agent</div>
+    <div class="role-track-wrap">
+      <div class="role-track"></div>
+      <div class="role-knob"></div>
+    </div>
+    <div class="role-label-bottom">Spymaster</div>
+  `
+  // Insert the real checkbox into the track so it drives state
+  const trackWrap = rolePanel.querySelector('.role-track-wrap')!
+  trackWrap.insertBefore(viewToggle, trackWrap.firstChild)
+  controlsEl.appendChild(rolePanel)
+
   app.appendChild(controlsEl)
 
   // Board
@@ -161,6 +189,15 @@ export function renderBoard(
     }
     if (viewMode === 'spymaster') {
       card.classList.add(cell.color)
+      // Add team label for red/blue cards
+      if (cell.color === 'red' || cell.color === 'blue' || cell.color === 'assassin') {
+        const label = document.createElement('span')
+        label.className = 'team-label'
+        if (cell.color === 'red') label.textContent = 'Red Team'
+        else if (cell.color === 'blue') label.textContent = 'Blue Team'
+        else if (cell.color === 'assassin') label.textContent = 'Assassin'
+        card.appendChild(label)
+      }
     }
 
     // Wire click-to-edit
@@ -250,15 +287,25 @@ export function renderControls(activePackIds: Set<string>, currentViewMode: View
   if (viewToggle) {
     viewToggle.checked = currentViewMode === 'spymaster'
   }
+  // Update role label active states
+  const rolePanel = document.querySelector('.role-panel')
+  if (rolePanel) {
+    const topLabel = rolePanel.querySelector('.role-label-top')
+    const bottomLabel = rolePanel.querySelector('.role-label-bottom')
+    if (topLabel) {
+      topLabel.classList.toggle('active', currentViewMode === 'operative')
+    }
+    if (bottomLabel) {
+      bottomLabel.classList.toggle('active', currentViewMode === 'spymaster')
+    }
+  }
   setViewToggleVisible(showToggle)
 }
 
 export function setViewToggleVisible(visible: boolean) {
-  if (viewToggle) {
-    const label = viewToggle.closest('.view-toggle') as HTMLElement
-    if (label) {
-      label.style.display = visible ? 'inline-flex' : 'none'
-    }
+  const panel = document.querySelector('.role-panel') as HTMLElement | null
+  if (panel) {
+    panel.style.display = visible ? 'flex' : 'none'
   }
 }
 
@@ -271,7 +318,7 @@ export function setClearCustomVisible(visible: boolean) {
 export function renderFooter(seed: string, firstTeam: 'red' | 'blue') {
   if (footerEl) {
     const teamClass = `team-${firstTeam}`
-    footerEl.innerHTML = `Seed: ${seed} | <span class="first-team ${teamClass}">${firstTeam.toUpperCase()} goes first</span>`
+    footerEl.innerHTML = `<div class="seed-badge">Seed: ${seed} | <span class="first-team ${teamClass}">${firstTeam.toUpperCase()} goes first</span></div>`
   }
 }
 

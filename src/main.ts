@@ -82,7 +82,7 @@ function fullRender() {
     renderBoard(state.currentBoard, state.viewMode, handleEditWord, handleStartEdit)
     renderFooter(state.currentBoard.seed, state.currentBoard.firstTeam)
   }
-  const showToggle = state.shareMode === 'local' || state.passwordRequired
+  const showToggle = true
   renderControls(state.activePackIds, state.viewMode, showToggle)
   setClearCustomVisible(state.customWords.size > 0)
 }

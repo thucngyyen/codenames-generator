@@ -133,6 +133,7 @@ export function initUI() {
       <p>This board is password-protected.</p>
       <input type="text" id="password-input" placeholder="4-digit code" maxlength="10" autocomplete="off" />
       <button id="password-submit" class="btn">Unlock</button>
+      <button id="password-cancel" class="btn btn-secondary">Cancel</button>
       <p id="password-error" class="password-error"></p>
     </div>
   `
@@ -342,21 +343,27 @@ export function showToast(message: string) {
 
 export function showPasswordPrompt(
   expectedPassword: string,
-  onSuccess: () => void
+  onSuccess: () => void,
+  onCancel?: () => void
 ) {
   if (!passwordOverlay) return
   passwordOverlay.style.display = 'flex'
   const input = passwordOverlay.querySelector<HTMLInputElement>('#password-input')!
   const submit = passwordOverlay.querySelector<HTMLButtonElement>('#password-submit')!
+  const cancel = passwordOverlay.querySelector<HTMLButtonElement>('#password-cancel')!
   const error = passwordOverlay.querySelector<HTMLParagraphElement>('#password-error')!
 
   input.value = ''
   error.textContent = ''
   input.focus()
 
+  const cleanup = () => {
+    passwordOverlay!.style.display = 'none'
+  }
+
   const check = () => {
     if (input.value === expectedPassword) {
-      passwordOverlay!.style.display = 'none'
+      cleanup()
       onSuccess()
     } else {
       error.textContent = 'Incorrect password'
@@ -365,9 +372,24 @@ export function showPasswordPrompt(
     }
   }
 
+  const doCancel = () => {
+    cleanup()
+    onCancel?.()
+  }
+
   submit.onclick = check
+  cancel.onclick = doCancel
+
+  // Click outside the box dismisses the prompt
+  passwordOverlay.onclick = (e) => {
+    if (e.target === passwordOverlay) {
+      doCancel()
+    }
+  }
+
   input.onkeydown = (e) => {
     if (e.key === 'Enter') check()
+    else if (e.key === 'Escape') doCancel()
   }
 }
 

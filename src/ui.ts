@@ -22,8 +22,13 @@ let shareModal: HTMLDivElement | null = null
 export type OnEditWord = (index: number, word: string) => boolean
 export type OnStartEdit = (index: number) => void
 
-export function generatePassword(): string {
-  return Math.floor(1000 + Math.random() * 9000).toString()
+export function generatePassword(seed: string): string {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i)
+    hash |= 0
+  }
+  return (Math.abs(hash) % 9000 + 1000).toString()
 }
 
 export function initUI() {
@@ -427,11 +432,11 @@ export async function handleShare(
 ) {
   let password: string | undefined
   if (viewMode === 'spymaster') {
-    password = generatePassword()
+    password = generatePassword(board.seed)
   }
   const hash = encodeBoard(board, viewMode, [...activePackIds], password, customWords)
   const url = `${location.origin}${location.pathname}#${hash}`
-  // QR code gets a URL without the password embedded
+  // QR code: same URL structure, just no password embedded
   const hashNoPassword = encodeBoard(board, viewMode, [...activePackIds], undefined, customWords)
   const qrUrl = `${location.origin}${location.pathname}#${hashNoPassword}`
   showShareModal(url, password, qrUrl)

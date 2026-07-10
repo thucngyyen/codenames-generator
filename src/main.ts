@@ -146,7 +146,7 @@ function handleEditWord(index: number, word: string): boolean {
 }
 
 function handleStartEdit(_index: number) {
-  // No-op — used to track if needed later
+  posthog.capture('word_edit_started')
 }
 
 function loadFromHash(hash: string) {

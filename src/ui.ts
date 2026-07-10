@@ -265,6 +265,7 @@ function startInlineEdit(
   const cancel = () => {
     card.textContent = currentWord
     card.classList.remove('editing')
+    posthog.capture('word_edit_cancelled')
   }
 
   input.onkeydown = (e) => {
@@ -447,6 +448,7 @@ export function showShareModal(url: string, password?: string, qrUrl?: string) {
 
   closeBtn.onclick = () => {
     shareModal!.style.display = 'none'
+    posthog.capture('share_modal_closed')
   }
 }
 

@@ -2,6 +2,7 @@ import type { Board, ViewMode } from './types'
 import { allPacks } from './packs'
 import { encodeBoard, copyToClipboard } from './url'
 import QRCode from 'qrcode'
+import posthog from './posthog'
 
 const app = document.getElementById('app')!
 
@@ -367,6 +368,7 @@ export function showPasswordPrompt(
       onSuccess()
     } else {
       error.textContent = 'Incorrect password'
+      posthog.capture('spymaster_unlock_failed')
       input.value = ''
       input.focus()
     }
@@ -434,11 +436,13 @@ export function showShareModal(url: string, password?: string, qrUrl?: string) {
   copyUrlBtn.onclick = async () => {
     const ok = await copyToClipboard(urlInput.value)
     showToast(ok ? 'URL copied!' : 'Failed to copy URL')
+    posthog.capture('share_url_copied', { success: ok })
   }
 
   copyPasswordBtn.onclick = async () => {
     const ok = await copyToClipboard(passwordInput.value)
     showToast(ok ? 'Password copied!' : 'Failed to copy password')
+    posthog.capture('share_password_copied', { success: ok })
   }
 
   closeBtn.onclick = () => {

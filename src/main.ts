@@ -1,4 +1,5 @@
 import '../styles.css'
+import posthog from './posthog'
 import { generateBoard } from './generator'
 import { decodeBoard } from './url'
 import {
@@ -105,6 +106,7 @@ function promptForSpymaster() {
     setViewMode('spymaster')
     fullRender()
     setShuffleDisabled(false)
+    posthog.capture('spymaster_unlocked')
   })
 }
 
@@ -137,6 +139,9 @@ function handleEditWord(index: number, word: string): boolean {
   setBoard(board)
   renderBoard(board, state.viewMode, handleEditWord, handleStartEdit)
   setClearCustomVisible(getState().customWords.size > 0)
+  posthog.capture('custom_word_saved', {
+    total_custom_words: getState().customWords.size,
+  })
   return true
 }
 
@@ -150,6 +155,11 @@ function loadFromHash(hash: string) {
 
   setActivePacks(decoded.activePackIds)
   setShareMode('shared')
+  posthog.capture('shared_board_loaded', {
+    view_mode: decoded.viewMode,
+    has_password: !!decoded.password,
+    pack_count: decoded.activePackIds.length,
+  })
 
   if (decoded.customWords) {
     clearCustomWords()
@@ -200,6 +210,9 @@ function init() {
       clearCustomWords()
       const seed = randomSeed()
       regenerateAndRender(seed)
+      posthog.capture('board_generated', {
+        active_pack_count: getState().activePackIds.size,
+      })
     })
   }
 
@@ -207,12 +220,16 @@ function init() {
   const clearCustomBtn = getClearCustomBtn()
   if (clearCustomBtn) {
     clearCustomBtn.addEventListener('click', () => {
+      const customWordCount = getState().customWords.size
       clearCustomWords()
       const state = getState()
       if (state.currentBoard) {
         const seed = state.currentBoard.seed
         regenerateAndRender(seed, state.currentBoard.firstTeam)
       }
+      posthog.capture('custom_words_cleared', {
+        custom_word_count: customWordCount,
+      })
     })
   }
 
@@ -223,6 +240,10 @@ function init() {
       const state = getState()
       if (state.currentBoard) {
         handleShare(state.currentBoard, state.viewMode, state.activePackIds, state.customWords)
+        posthog.capture('board_shared', {
+          view_mode: state.viewMode,
+          has_custom_words: state.customWords.size > 0,
+        })
       }
     })
   }
@@ -232,6 +253,7 @@ function init() {
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
       regenerateColorsOnly()
+      posthog.capture('colors_shuffled')
     })
   }
 
@@ -246,7 +268,9 @@ function init() {
         promptForSpymaster()
         return
       }
+      const newMode = state.viewMode === 'operative' ? 'spymaster' : 'operative'
       applyViewToggle()
+      posthog.capture('view_mode_toggled', { view_mode: newMode })
     })
   }
 
@@ -259,6 +283,11 @@ function init() {
       const state = getState()
       const currentSeed = state.currentBoard?.seed ?? randomSeed()
       regenerateAndRender(currentSeed)
+      posthog.capture('pack_toggled', {
+        pack_id: packId,
+        enabled: state.activePackIds.has(packId),
+        active_pack_count: state.activePackIds.size,
+      })
     })
   })
 

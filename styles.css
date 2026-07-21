@@ -561,10 +561,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(20, 10, 5, 0.75);
+  background: rgba(15, 8, 4, 0.97);
   z-index: 200;
   padding: 16px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .password-box,
@@ -648,6 +649,23 @@ body {
   margin-bottom: 10px;
   font-family: 'Cinzel', serif;
   font-size: 0.9rem;
+}
+
+.password-reveal-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.password-reveal-row input {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 10px;
+}
+
+.password-reveal-row .btn {
+  flex: 0 0 auto;
+  align-self: flex-start;
 }
 
 .qr-field {

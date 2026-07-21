@@ -51,7 +51,7 @@ async function main() {
   await viewer1.goto(operativeUrl)
   await viewer1.waitForTimeout(500)
 
-  const toggleVisible1 = await viewer1.locator('.view-toggle').isVisible()
+  const toggleVisible1 = await viewer1.locator('.role-panel').isVisible()
   console.log(`Toggle visible in operative share: ${toggleVisible1}`)
   if (toggleVisible1) throw new Error('Toggle should be hidden in operative share')
 
@@ -78,7 +78,7 @@ async function main() {
   await viewer2.goto(spymasterUrl)
   await viewer2.waitForTimeout(500)
 
-  const toggleVisible2 = await viewer2.locator('.view-toggle').isVisible()
+  const toggleVisible2 = await viewer2.locator('.role-panel').isVisible()
   console.log(`Toggle visible in spymaster share: ${toggleVisible2}`)
   if (!toggleVisible2) throw new Error('Toggle should be visible in spymaster share')
 
@@ -154,7 +154,7 @@ async function main() {
   await page1.locator('#generate-btn').click()
   await page1.waitForTimeout(200)
 
-  const toggleVisible3 = await page1.locator('.view-toggle').isVisible()
+  const toggleVisible3 = await page1.locator('.role-panel').isVisible()
   console.log(`Toggle visible in local mode: ${toggleVisible3}`)
   if (!toggleVisible3) throw new Error('Toggle should be visible in local mode')
 

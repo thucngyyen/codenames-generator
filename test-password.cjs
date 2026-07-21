@@ -83,7 +83,7 @@ async function main() {
   if (cardsCount !== 25) throw new Error('Board should be visible')
 
   // Toggle should be visible
-  const toggleVisible = await newPage.locator('.view-toggle').isVisible()
+  const toggleVisible = await newPage.locator('.role-panel').isVisible()
   console.log(`Toggle visible: ${toggleVisible}`)
   if (!toggleVisible) throw new Error('Toggle should be visible in spymaster share')
 

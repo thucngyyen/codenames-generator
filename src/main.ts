@@ -84,7 +84,10 @@ function fullRender() {
     renderBoard(state.currentBoard, state.viewMode, handleEditWord, handleStartEdit)
     renderFooter(state.currentBoard.seed, state.currentBoard.firstTeam)
   }
-  const showToggle = true
+  // Hide the Agent/Spymaster toggle for operative ("Agent View") shares so a
+  // shared recipient can't flip to Spymaster and reveal colors without the
+  // password. Local play and password-gated spymaster shares keep it visible.
+  const showToggle = state.shareMode === 'local' || state.passwordRequired
   renderControls(state.activePackIds, state.viewMode, showToggle)
   setClearCustomVisible(state.customWords.size > 0)
 }
@@ -262,7 +265,7 @@ function init() {
   if (viewToggle) {
     viewToggle.addEventListener('change', () => {
       const state = getState()
-      if (state.shareMode === 'shared' && state.passwordRequired && !state.passwordVerified) {
+      if (state.shareMode === 'shared' && !state.passwordVerified) {
         // Revert the checkbox visually since we're showing a prompt
         viewToggle.checked = false
         promptForSpymaster()

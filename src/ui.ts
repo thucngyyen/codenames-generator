@@ -157,7 +157,10 @@ export function initUI() {
       </div>
       <div class="modal-field" id="share-password-field" style="display:none">
         <label>Password</label>
-        <input type="text" id="share-password" readonly />
+        <div class="password-reveal-row">
+          <input type="password" id="share-password" readonly />
+          <button id="toggle-share-password" class="btn btn-secondary" type="button">Show</button>
+        </div>
         <button id="copy-password-btn" class="btn">Copy Password</button>
       </div>
       <button id="close-modal-btn" class="btn btn-secondary">Close</button>
@@ -408,6 +411,7 @@ export function showShareModal(url: string, password?: string, qrUrl?: string) {
   const urlInput = shareModal.querySelector<HTMLInputElement>('#share-url')!
   const passwordField = shareModal.querySelector<HTMLDivElement>('#share-password-field')!
   const passwordInput = shareModal.querySelector<HTMLInputElement>('#share-password')!
+  const togglePasswordBtn = shareModal.querySelector<HTMLButtonElement>('#toggle-share-password')!
   const copyUrlBtn = shareModal.querySelector<HTMLButtonElement>('#copy-url-btn')!
   const copyPasswordBtn = shareModal.querySelector<HTMLButtonElement>('#copy-password-btn')!
   const closeBtn = shareModal.querySelector<HTMLButtonElement>('#close-modal-btn')!
@@ -421,6 +425,15 @@ export function showShareModal(url: string, password?: string, qrUrl?: string) {
   } else {
     passwordField.style.display = 'none'
     passwordInput.value = ''
+  }
+
+  // Always re-open the password masked, regardless of previous reveal state.
+  passwordInput.type = 'password'
+  togglePasswordBtn.textContent = 'Show'
+  togglePasswordBtn.onclick = () => {
+    const revealed = passwordInput.type === 'text'
+    passwordInput.type = revealed ? 'password' : 'text'
+    togglePasswordBtn.textContent = revealed ? 'Show' : 'Hide'
   }
 
   // Generate QR code with URL that does not contain the password
